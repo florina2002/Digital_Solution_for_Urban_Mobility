@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoTransit</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="background" id="appBackground">
+    <div class="search-container">
+        <input type="text" id="searchBar" placeholder="Search locations..." oninput="updateSuggestions()">
+        <button id="shareButton" onclick="shareRoute()">📤</button>
+        <div id="suggestions"></div>
+    </div>
+
+    <div id="reportButton" class="report-button" onclick="openReportWindow()">❗</div>
+
+    <div class="bottom-bar" id="bottomBar">
+        <div class="bottom-bar-header" id="dragHandle">
+            <p id="selectedLocation">Select a location</p>
+        </div>
+        <div class="bottom-bar-content">
+            <button class="report-issue-button" onclick="openReportIssueModal()">Report an Issue</button>
+            <button class="trip-share-button" onclick="openTripShareModal()">Share a Trip Plan</button>
+            <button onclick="toggleFilters()" id="filtersButton">See Filters</button>
+            <div id="filters" class="hidden">
+                <label><input type="checkbox" name="filter" value="environmental-friendly" onchange="updateRoutes()"> Environmental Friendly</label><br>
+                <label><input type="checkbox" name="filter" value="easily-accessible" onchange="updateRoutes()"> Easily Accessible</label>
+            </div>
+            <div id="routes">
+                <div class="route" onclick="handlePublicTransport('images/iulius_public_transp.PNG')">
+                    <p>15 min.</p>
+                    <div class="symbols">🚌</div>
+                    <div class="route-details">
+                        <div class="status-indicator on-time">On Time</div>
+                        <div class="next-arrival">Next bus: 5 min</div>
+                    </div>
+                    <div class="tags">
+                        <span class="tag ENV">ENV</span>
+                    </div>
+                </div>
+
+                <div class="route" onclick="selectRoute('images/iulius_walk.PNG')">
+                    <p>27 min.</p>
+                    <div class="symbols">🚶</div>
+                    <div class="tags">
+                        <span class="tag ENV">ENV</span>
+                    </div>
+                </div>
+
+                <div class="route" onclick="handleBikeRoute('images/iulius_bike.png')">
+                    <p>13 min.</p>
+                    <div class="symbols">🚲</div>
+                    <div class="tags">
+                        <span class="tag ENV">ENV</span>
+                    </div>
+                    <div class="bike-info">5 bikes available</div>
+                </div>
+
+                <div class="route" onclick="handleCarRoute('images/iulius_car.PNG')">
+                    <p>8 min.</p>
+                    <div class="symbols">🚗</div>
+                    <div class="route-details">
+                        <div class="car-status">3 cars nearby</div>
+                        <div class="car-info">From 2.5€/ride</div>
+                    </div>
+                    <div class="tags">
+                        <span class="tag ACC">ACC</span>
+                    </div>
+                </div>
+
+                <div class="route" onclick="selectRoute('images/iulius_scooter.jpg')">
+                    <p>12 min.</p>
+                    <div class="symbols">🛴</div>
+                    <div class="tags">
+                        <span class="tag ENV">ENV</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="reportWindow" class="report-window hidden">
+        <p>Confirm report?</p>
+        <div class="report-actions">
+            <button onclick="closeReportWindow()">Yes</button>
+            <button onclick="closeReportWindow()">No</button>
+        </div>
+    </div>
+
+    <div id="bikeReservationModal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Available Bikes</h2>
+            <div class="bike-list">
+                <div class="bike-item" onclick="reserveBike(1)">
+                    <div class="bike-details">
+                        <span class="bike-number">Bike #1</span>
+                        <div class="battery-level">
+                            <div class="battery-icon">🔋</div>
+                            <div class="battery-percentage">95%</div>
+                        </div>
+                    </div>
+                    <div class="bike-status">Available</div>
+                </div>
+                <div class="bike-item" onclick="reserveBike(2)">
+                    <div class="bike-details">
+                        <span class="bike-number">Bike #2</span>
+                        <div class="battery-level">
+                            <div class="battery-icon">🔋</div>
+                            <div class="battery-percentage">78%</div>
+                        </div>
+                    </div>
+                    <div class="bike-status">Available</div>
+                </div>
+                <div class="bike-item" onclick="reserveBike(3)">
+                    <div class="bike-details">
+                        <span class="bike-number">Bike #3</span>
+                        <div class="battery-level">
+                            <div class="battery-icon">🔋</div>
+                            <div class="battery-percentage">82%</div>
+                        </div>
+                    </div>
+                    <div class="bike-status">Available</div>
+                </div>
+            </div>
+            <button class="close-modal" onclick="closeModal('bikeReservationModal')">Close</button>
+        </div>
+    </div>
+
+    <div id="reservationConfirmModal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Bike Reserved!</h2>
+            <div class="qr-code">
+                <img src="images/qr_code.png" alt="QR Code" style="width: 200px; height: 200px;">
+            </div>
+            <div class="reservation-timer">
+                Time remaining: <span id="timer">10:00</span>
+            </div>
+            <p>Scan this QR code at the bike station to unlock your bike</p>
+            <button onclick="closeModal('reservationConfirmModal')">Close</button>
+        </div>
+    </div>
+
+    <div id="transportStatusModal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Bus Route Status</h2>
+            <div class="route-status-header">
+                <div class="route-number">Bus 24</div>
+                <div class="status-badge on-time">On Time</div>
+            </div>
+
+            <div class="stops-timeline">
+                <div class="stop-item passed">
+                    <div class="stop-time">14:30</div>
+                    <div class="stop-dot"></div>
+                    <div class="stop-name">UTCN</div>
+                </div>
+                <div class="stop-item current">
+                    <div class="stop-time">14:35</div>
+                    <div class="stop-dot"></div>
+                    <div class="stop-name">Mărăști</div>
+                </div>
+                <div class="stop-item">
+                    <div class="stop-time">14:45</div>
+                    <div class="stop-dot"></div>
+                    <div class="stop-name">Iulius Mall</div>
+                </div>
+            </div>
+
+            <div class="real-time-updates">
+                <h3>Updates</h3>
+                <div class="update-item">
+                    <span class="update-time">14:30</span>
+                    <span class="update-text">Bus departed from UTCN</span>
+                </div>
+            </div>
+
+            <div class="notification-settings">
+                <label class="toggle-label">
+                    <input type="checkbox" id="notificationToggle">
+                    Get notifications for this route
+                </label>
+            </div>
+
+            <button onclick="closeModal('transportStatusModal')" class="close-button">Close</button>
+        </div>
+    </div>
+
+    <div id="carSelectionModal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Available Cars Nearby</h2>
+            <div class="car-list">
+                <div class="car-item" onclick="selectCar(1)">
+                    <div class="car-header">
+                        <span class="car-model">Tesla Model 3</span>
+                        <span class="car-distance">300m away</span>
+                    </div>
+                    <div class="car-details">
+                        <div class="car-status">
+                            <div class="battery-level">
+                                <span class="battery-icon">🔋</span>
+                                <span class="battery-percentage">92%</span>
+                            </div>
+                            <div class="range">Range: 280 km</div>
+                        </div>
+                        <div class="cleanliness-rating">
+                            <span>Cleanliness:</span>
+                            <span class="stars">⭐⭐⭐⭐⭐</span>
+                        </div>
+                    </div>
+                    <div class="car-price">2.5€/min</div>
+                </div>
+
+                <div class="car-item" onclick="selectCar(2)">
+                    <div class="car-header">
+                        <span class="car-model">Renault Zoe</span>
+                        <span class="car-distance">450m away</span>
+                    </div>
+                    <div class="car-details">
+                        <div class="car-status">
+                            <div class="battery-level">
+                                <span class="battery-icon">🔋</span>
+                                <span class="battery-percentage">78%</span>
+                            </div>
+                            <div class="range">Range: 220 km</div>
+                        </div>
+                        <div class="cleanliness-rating">
+                            <span>Cleanliness:</span>
+                            <span class="stars">⭐⭐⭐⭐</span>
+                        </div>
+                    </div>
+                    <div class="car-price">2.2€/min</div>
+                </div>
+            </div>
+            <button class="close-modal" onclick="closeModal('carSelectionModal')">Close</button>
+        </div>
+    </div>
+
+    <div id="carChecklistModal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Pre-trip Checklist</h2>
+            <div class="checklist">
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateChecklist()">
+                    Exterior damage check
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateChecklist()">
+                    Interior cleanliness check
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateChecklist()">
+                    Tire condition check
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateChecklist()">
+                    Battery level confirmed
+                </label>
+            </div>
+            <div class="checklist-progress">
+                <div class="progress-bar">
+                    <div id="checklistProgress" class="progress" style="width: 0%"></div>
+                </div>
+                <span id="checklistStatus">0/4 completed</span>
+            </div>
+            <button id="startRideBtn" disabled onclick="startRide()" class="primary-button">
+                Start Ride
+            </button>
+            <button class="secondary-button" onclick="closeModal('carChecklistModal')">
+                Cancel
+            </button>
+        </div>
+    </div>
+
+    <div id="carAccessModal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Your Car is Ready!</h2>
+            <div class="access-info">
+                <div class="qr-code">
+                    <img src="images/qr_code.png" alt="QR Code" style="width: 200px; height: 200px;">
+                </div>
+                <p>Scan this QR code at the car to unlock</p>
+                <div class="car-location">
+                    <h3>Car Location</h3>
+                    <p>Parking Lot P3, Spot 45</p>
+                    <p class="walking-time">2 min walk</p>
+                </div>
+            </div>
+            <button onclick="closeModal('carAccessModal')" class="close-button">Close</button>
+        </div>
+    </div>
+
+</div>
+<script src="script.js"></script>
+<div id="ecoFriendlyModal" class="modal hidden">
+    <div class="modal-content">
+        <h2>Eco-Friendly Travel Comparison</h2>
+        <div id="ecoComparisonContainer"></div>
+        <button onclick="closeEcoFriendlyModal()">Close</button>
+    </div>
+</div>
+
+<div id="travelHistoryModal" class="modal hidden">
+    <div class="modal-content">
+        <h2>Monthly Travel History Report</h2>
+        <div id="travelHistoryContainer"></div>
+        <button onclick="closeTravelHistoryModal()">Close</button>
+    </div>
+</div>
+
+<div id="reportIssueModal" class="modal hidden">
+    <div class="modal-content">
+        <h2>Report an Issue</h2>
+        <label for="issueType">Type of Issue:</label>
+        <select id="issueType">
+            <option value="broken-bike">Broken Bike</option>
+            <option value="bus-delay">Bus Delay</option>
+            <option value="route-problem">Route Problem</option>
+        </select>
+
+        <label for="issueDescription">Description:</label>
+        <textarea id="issueDescription" placeholder="Describe the issue..."></textarea>
+
+        <label for="issuePhoto">Upload Photo (optional):</label>
+        <input type="file" id="issuePhoto" accept="image/*">
+
+        <button onclick="submitIssueReport()">Submit Report</button>
+        <button onclick="closeReportIssueModal()">Close</button>
+    </div>
+</div>
+<div id="tripShareModal" class="modal hidden">
+    <div class="modal-content">
+        <h2>Share Your Trip Plan</h2>
+
+        <label for="tripName">Trip Name:</label>
+        <input type="text" id="tripName" placeholder="Enter trip name...">
+
+        <label for="tripDetails">Trip Details:</label>
+        <textarea id="tripDetails" placeholder="Enter trip stops, times, transport modes..."></textarea>
+
+        <label for="shareMethod">Share Via:</label>
+        <select id="shareMethod">
+            <option value="link">Shareable Link</option>
+            <option value="email">Email</option>
+            <option value="message">Messaging App</option>
+        </select>
+
+        <label>
+            <input type="checkbox" id="sendNotifications"> Enable Notifications for Updates
+        </label>
+
+        <button onclick="generateTripShareLink()">Generate Share Link</button>
+        <button onclick="closeTripShareModal()">Close</button>
+
+        <div id="tripShareLinkContainer" class="hidden">
+            <p>Share this link with your friends:</p>
+            <input type="text" id="tripShareLink" readonly>
+            <button onclick="copyTripShareLink()">Copy Link</button>
+        </div>
+    </div>
+</div>
+
+<button class="trip-share-button" onclick="openTripShareModal()">Share a Trip Plan</button>
+
+</body>
+</html>

@@ -1,0 +1,717 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.background {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    transition: background-image 0.3s ease-in-out;
+    position: relative;
+}
+
+.background[style*="background-image"] {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    background-color: #f0f2f5;
+    padding: 20px;
+}
+
+.search-container {
+    display: flex;
+    padding: 20px;
+    align-items: center;
+    position: relative;
+}
+
+#searchBar {
+    flex-grow: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+#shareButton {
+    margin-left: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#shareButton:hover {
+    background-color: #0056b3;
+}
+
+#suggestions {
+    position: absolute;
+    top: 50px;
+    left: 20px;
+    width: calc(100% - 40px);
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    max-height: 150px;
+    overflow-y: auto;
+    z-index: 10;
+}
+
+#suggestions div {
+    padding: 10px;
+    cursor: pointer;
+}
+
+#suggestions div:hover {
+    background-color: #f0f0f0;
+}
+
+#reportButton {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 40px;
+    height: 40px;
+    background-color: transparent;
+    color: red;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 38px;
+    border: 2px solid red;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+#reportButton:hover {
+    background-color: rgba(255, 0, 0, 0.1);
+}
+
+.report-window {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.report-window.hidden {
+    display: none;
+}
+
+.report-actions button {
+    margin: 10px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.report-actions button:first-child {
+    background-color: red;
+    color: white;
+}
+
+.report-actions button:last-child {
+    background-color: gray;
+    color: white;
+}
+
+.bottom-bar {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: white;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.2);
+    border-radius: 16px 16px 0 0;
+    transition: height 0.3s ease-in-out;
+}
+
+.bottom-bar-header {
+    padding: 20px;
+    background: #f9f9f9;
+    text-align: center;
+    cursor: grab;
+    user-select: none;
+    border-radius: 16px 16px 0 0;
+}
+
+.bottom-bar-content {
+    padding: 20px;
+    overflow-y: auto;
+    max-height: calc(100vh - 200px);
+}
+
+#filtersButton {
+    padding: 10px;
+    background: black;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+#filtersButton:hover {
+    background: #333;
+}
+
+.hidden {
+    display: none;
+}
+
+.route {
+    background: white;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    position: relative;
+}
+
+.route:hover {
+    background-color: #f8f9fa;
+}
+
+.route.selected {
+    border: 2px solid #007bff;
+    background-color: #f0f7ff;
+}
+
+.route p {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.symbols {
+    margin-top: 5px;
+    font-size: 20px;
+}
+
+.tags {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+.tag {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+}
+
+.tag.ENV {
+    background-color: #28a745;
+}
+
+.tag.ACC {
+    background-color: #007bff;
+}
+
+#filters {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 400px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.bike-list {
+    margin: 20px 0;
+}
+
+.bike-item {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.bike-item:hover {
+    background-color: #f5f5f5;
+}
+
+.bike-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.battery-level {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.battery-percentage {
+    color: #28a745;
+}
+
+.bike-status {
+    font-size: 0.9em;
+    color: #28a745;
+}
+
+.qr-code {
+    width: 200px;
+    height: 200px;
+    margin: 20px auto;
+    background: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.reservation-timer {
+    text-align: center;
+    font-size: 1.2em;
+    margin: 15px 0;
+    font-weight: bold;
+}
+
+.modal button {
+    width: 100%;
+    padding: 10px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.modal button:hover {
+    background: #0056b3;
+}
+
+.bike-info {
+    font-size: 0.9em;
+    color: #666;
+    margin-top: 5px;
+}
+
+.car-list {
+    margin: 20px 0;
+}
+
+.car-item {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.car-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.car-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.car-model {
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.car-distance {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.car-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0;
+}
+
+.car-status {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.battery-level {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.range {
+    color: #666;
+    font-size: 0.9em;
+}
+
+.cleanliness-rating {
+    font-size: 0.9em;
+}
+
+.car-price {
+    text-align: right;
+    color: #1a73e8;
+    font-weight: bold;
+}
+
+.checklist {
+    margin: 20px 0;
+}
+
+.checklist-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    margin: 5px 0;
+    background: #f8f9fa;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.checklist-item input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.checklist-progress {
+    margin: 20px 0;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #eee;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress {
+    height: 100%;
+    background: #1a73e8;
+    transition: width 0.3s ease;
+}
+
+#checklistStatus {
+    display: block;
+    text-align: center;
+    margin-top: 5px;
+    color: #666;
+}
+
+.primary-button {
+    width: 100%;
+    padding: 12px;
+    background: #1a73e8;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1em;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+.primary-button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.secondary-button {
+    width: 100%;
+    padding: 12px;
+    background: #f8f9fa;
+    color: #1a73e8;
+    border: 1px solid #1a73e8;
+    border-radius: 8px;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+.access-info {
+    text-align: center;
+}
+
+.car-location {
+    margin: 20px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.walking-time {
+    color: #666;
+    margin-top: 5px;
+}
+
+.eco-compare-button, .travel-history-button {
+    width: 100%;
+    padding: 12px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    margin-top: 10px;
+}
+
+.eco-compare-button:hover, .travel-history-button:hover {
+    background: #218838;
+}
+
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 90%;
+    max-width: 400px;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.eco-option, .travel-history-item {
+    background: white;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+.travel-history-button {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    margin-top: 10px;
+}
+
+.travel-history-button:hover {
+    background: #0056b3;
+}
+
+.eco-compare-button {
+    width: 100%;
+    padding: 15px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.1em;
+    margin-top: 12px;
+    margin-bottom: 10px;
+}
+
+.eco-compare-button:hover {
+    background: #218838;
+}
+
+.travel-history-button {
+    width: 100%;
+    padding: 15px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.1em;
+    margin-top: 12px;
+    margin-bottom: 10px;
+}
+
+.travel-history-button:hover {
+    background: #0056b3;
+}
+
+.report-issue-button {
+    width: 100%;
+    padding: 15px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.1em;
+    margin-top: 12px;
+    margin-bottom: 10px;
+}
+
+.report-issue-button:hover {
+    background: #b52b3b;
+}
+
+.trip-share-button {
+    width: 100%;
+    padding: 15px;
+    background: #ff9800;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.1em;
+    margin-top: 12px;
+    margin-bottom: 10px;
+}
+
+.trip-share-button:hover {
+    background: #e68900;
+}
+
+.modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    width: 90%;
+    max-width: 500px;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.trip-share-container, .report-issue-container {
+    background: white;
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 8px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+    text-align: left;
+}
+
+#tripShareModal label, #reportIssueModal label {
+    display: block;
+    font-weight: bold;
+    margin-top: 10px;
+    text-align: left;
+}
+
+#tripShareModal input, #tripShareModal textarea, #tripShareModal select,
+#reportIssueModal input, #reportIssueModal textarea, #reportIssueModal select {
+    width: 100%;
+    padding: 12px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+    box-sizing: border-box;
+}
+
+#tripShareModal textarea, #reportIssueModal textarea {
+    height: 100px;
+    resize: none;
+}
+
+#tripShareModal button, #reportIssueModal button {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    cursor: pointer;
+    margin-top: 12px;
+    box-sizing: border-box;
+}
+
+#tripShareModal button:first-of-type, #reportIssueModal button:first-of-type {
+    background: #ff9800;
+    color: white;
+}
+
+#tripShareModal button:first-of-type:hover, #reportIssueModal button:first-of-type:hover {
+    background: #e68900;
+}
+
+#tripShareModal button:last-of-type, #reportIssueModal button:last-of-type {
+    background: #6c757d;
+    color: white;
+}
+
+#tripShareModal button:last-of-type:hover, #reportIssueModal button:last-of-type:hover {
+    background: #545b62;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+.bottom-bar-content {
+    max-height: 50vh;
+    overflow-y: auto;
+}
+
+.travel-history-button {
+    position: relative;
+    bottom: 0;
+}
